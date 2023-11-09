@@ -6,7 +6,7 @@ import React, {
   useState,
   type PropsWithChildren,
 } from 'react';
-import { NativeEventEmitter, NativeModules } from 'react-native';
+import { NativeEventEmitter } from 'react-native';
 
 import FoldingFeature from '../FoldingFeature';
 import {
@@ -91,7 +91,7 @@ const useProvideFunc = (): FoldingFeatureContextProps => {
   useEffect(() => {
     FoldingFeature.startListening();
 
-    const eventEmitter = new NativeEventEmitter(NativeModules.FoldingFeature);
+    const eventEmitter = new NativeEventEmitter();
     const layoutSubscription = eventEmitter.addListener(
       'onLayoutInfoChange',
       (event) => {

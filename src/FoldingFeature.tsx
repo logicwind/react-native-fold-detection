@@ -21,8 +21,4 @@ interface FoldingFeatureInterface {
   startListening: () => void;
 }
 
-export const isFoldSupported = () => {
-  return FoldingFeature.isFoldSupported();
-};
-
 export default FoldingFeature as FoldingFeatureInterface;

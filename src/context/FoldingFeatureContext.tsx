@@ -29,6 +29,7 @@ export const FoldingFeatureContext = createContext<FoldingFeatureContextProps>({
     occlusionType: FoldingFeatureOcclusionType.NONE,
     orientation: FoldingFeatureOrientation.VERTICAL,
     isSeparating: false,
+    isFoldSupported: false,
   },
   // helper state
   isTableTop: false,
@@ -62,6 +63,7 @@ const useProvideFunc = (): FoldingFeatureContextProps => {
     occlusionType: FoldingFeatureOcclusionType.NONE,
     orientation: FoldingFeatureOrientation.VERTICAL,
     isSeparating: false,
+    isFoldSupported: false,
   });
 
   const updateLayoutInfo = (event: LayoutInfo) => {
@@ -93,10 +95,9 @@ const useProvideFunc = (): FoldingFeatureContextProps => {
     const layoutSubscription = eventEmitter.addListener(
       'onLayoutInfoChange',
       (event) => {
-        if (event && event.displayFeatures) {
+        if (event?.displayFeatures) {
           const stringObject = JSON.stringify(event.displayFeatures);
           const displayFeatures = JSON.parse(stringObject);
-
           if (displayFeatures) {
             // Now you can use these values as needed in your React Native component
             updateLayoutInfo(displayFeatures);

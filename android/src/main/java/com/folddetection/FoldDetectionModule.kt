@@ -24,13 +24,6 @@ class FoldDetectionModule(reactContext: ReactApplicationContext) : ReactContextB
   }
 
   @ReactMethod
-  fun isFoldSupported(promise: Promise) {
-    val packageManager = reactApplicationContext.packageManager
-    val featureSupported = packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE)
-    promise.resolve(featureSupported)
-  }
-
-  @ReactMethod
   fun startListening() {
     windowInfoTracker.addWindowLayoutInfoListener(currentActivity!!, Executors.newSingleThreadExecutor(), layoutStateChangeCallback)
   }
@@ -46,6 +39,8 @@ class FoldDetectionModule(reactContext: ReactApplicationContext) : ReactContextB
 
       try {
         val displayFeaturesList = newLayoutInfo.displayFeatures
+        val packageManager = reactApplicationContext.packageManager
+        val featureSupported = packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE)
 
         if (displayFeaturesList.isNotEmpty()) {
           val feature = displayFeaturesList[0] // Assuming there's only one feature
@@ -58,6 +53,7 @@ class FoldDetectionModule(reactContext: ReactApplicationContext) : ReactContextB
             featureObject.putString("orientation", foldingFeature.orientation.toString())
             featureObject.putBoolean("isSeparating", foldingFeature.isSeparating)
             featureObject.putString("occlusionType", foldingFeature.occlusionType.toString())
+            featureObject.putBoolean("isFoldSupported",featureSupported)
 
             // Parse and include detailed bounds information
             val bounds = parseBoundsString(foldingFeature.bounds.toString())
@@ -75,7 +71,7 @@ class FoldDetectionModule(reactContext: ReactApplicationContext) : ReactContextB
 
     private fun parseBoundsString(boundsString: String): WritableMap {
       val bounds = Arguments.createMap()
-      val regex = Regex("Rect\\((\\d+), (\\d+) - (\\d+), (\\d+)\\)")
+      val regex = Regex(".*\\((\\d+), (\\d+) - (\\d+), (\\d+)\\)")
       val matchResult = regex.find(boundsString)
 
       if (matchResult != null && matchResult.groupValues.size == 5) {

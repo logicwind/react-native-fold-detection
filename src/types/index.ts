@@ -18,6 +18,7 @@ export type LayoutInfo = {
   occlusionType: FoldingFeatureOcclusionType;
   orientation: FoldingFeatureOrientation;
   isSeparating: boolean;
+  isFoldSupported: boolean;
   bounds?: {
     top: number;
     bottom: number;

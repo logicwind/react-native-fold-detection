@@ -22,6 +22,9 @@ export default () => {
       <Text style={styles.blockText}>
         bounds: {`${JSON.stringify(layoutInfo.bounds)}`}
       </Text>
+      <Text style={styles.blockText}>
+        isFoldSupported: {`${JSON.stringify(layoutInfo.isFoldSupported)}`}
+      </Text>
       <Text style={styles.header}>Helpers: </Text>
       <Text style={styles.blockText}>
         isTableTop: {isTableTop ? 'true' : 'false'}

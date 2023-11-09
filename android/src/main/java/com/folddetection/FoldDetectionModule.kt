@@ -20,7 +20,7 @@ class FoldDetectionModule(reactContext: ReactApplicationContext) : ReactContextB
   private val layoutStateChangeCallback = LayoutStateChangeCallback()
 
   override fun getName(): String {
-    return "WindowLayoutInfo"
+    return "FoldingFeature"
   }
 
   @ReactMethod

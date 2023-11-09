@@ -9,15 +9,15 @@ export default () => {
     <SafeAreaView style={styles.container}>
       <Text style={styles.header}>Folding Feature Information</Text>
 
-      <Text style={styles.blockText}>state: {layoutInfo.State}</Text>
+      <Text style={styles.blockText}>state: {layoutInfo.state}</Text>
       <Text style={styles.blockText}>
-        orientation: {layoutInfo.Orientation}
+        orientation: {layoutInfo.orientation}
       </Text>
       <Text style={styles.blockText}>
-        occlusionType: {layoutInfo.OcclusionType}
+        occlusionType: {layoutInfo.occlusionType}
       </Text>
       <Text style={styles.blockText}>
-        isSeparating: {layoutInfo.IsSeparating ? 'true' : 'false'}
+        isSeparating: {layoutInfo.isSeparating ? 'true' : 'false'}
       </Text>
       <Text style={styles.blockText}>
         bounds: {`${JSON.stringify(layoutInfo.bounds)}`}

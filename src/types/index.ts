@@ -14,10 +14,10 @@ export enum FoldingFeatureOcclusionType {
 }
 
 export type LayoutInfo = {
-  State: FoldingFeatureState;
-  OcclusionType: FoldingFeatureOcclusionType;
-  Orientation: FoldingFeatureOrientation;
-  IsSeparating: boolean;
+  state: FoldingFeatureState;
+  occlusionType: FoldingFeatureOcclusionType;
+  orientation: FoldingFeatureOrientation;
+  isSeparating: boolean;
   bounds?: {
     top: number;
     bottom: number;

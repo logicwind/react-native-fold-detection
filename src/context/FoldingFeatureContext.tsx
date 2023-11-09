@@ -25,10 +25,10 @@ type FoldingFeatureContextProps = {
 
 export const FoldingFeatureContext = createContext<FoldingFeatureContextProps>({
   layoutInfo: {
-    State: FoldingFeatureState.FLAT,
-    OcclusionType: FoldingFeatureOcclusionType.NONE,
-    Orientation: FoldingFeatureOrientation.VERTICAL,
-    IsSeparating: false,
+    state: FoldingFeatureState.FLAT,
+    occlusionType: FoldingFeatureOcclusionType.NONE,
+    orientation: FoldingFeatureOrientation.VERTICAL,
+    isSeparating: false,
   },
   // helper state
   isTableTop: false,
@@ -58,10 +58,10 @@ export const FoldingFeatureProvider = ({ children }: PropsWithChildren<{}>) => {
 
 const useProvideFunc = (): FoldingFeatureContextProps => {
   const [layoutInfo, setLayoutInfo] = useState<LayoutInfo>({
-    State: FoldingFeatureState.FLAT,
-    OcclusionType: FoldingFeatureOcclusionType.NONE,
-    Orientation: FoldingFeatureOrientation.VERTICAL,
-    IsSeparating: false,
+    state: FoldingFeatureState.FLAT,
+    occlusionType: FoldingFeatureOcclusionType.NONE,
+    orientation: FoldingFeatureOrientation.VERTICAL,
+    isSeparating: false,
   });
 
   const updateLayoutInfo = (event: LayoutInfo) => {
@@ -70,15 +70,15 @@ const useProvideFunc = (): FoldingFeatureContextProps => {
 
   const isTableTop = useMemo(() => {
     return (
-      layoutInfo.State === FoldingFeatureState.HALF_OPENED &&
-      layoutInfo.Orientation === FoldingFeatureOrientation.HORIZONTAL
+      layoutInfo.state === FoldingFeatureState.HALF_OPENED &&
+      layoutInfo.orientation === FoldingFeatureOrientation.HORIZONTAL
     );
   }, [layoutInfo]);
 
   const isBook = useMemo(() => {
     return (
-      layoutInfo.State === FoldingFeatureState.HALF_OPENED &&
-      layoutInfo.Orientation === FoldingFeatureOrientation.VERTICAL
+      layoutInfo.state === FoldingFeatureState.HALF_OPENED &&
+      layoutInfo.orientation === FoldingFeatureOrientation.VERTICAL
     );
   }, [layoutInfo]);
 

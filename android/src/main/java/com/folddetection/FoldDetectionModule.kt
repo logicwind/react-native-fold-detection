@@ -54,14 +54,14 @@ class FoldDetectionModule(reactContext: ReactApplicationContext) : ReactContextB
 
           if (feature is FoldingFeature) {
             val foldingFeature = feature as FoldingFeature
-            featureObject.putString("State", foldingFeature.state.toString())
-            featureObject.putString("Orientation", foldingFeature.orientation.toString())
-            featureObject.putBoolean("IsSeparating", foldingFeature.isSeparating)
-            featureObject.putString("OcclusionType", foldingFeature.occlusionType.toString())
+            featureObject.putString("state", foldingFeature.state.toString())
+            featureObject.putString("orientation", foldingFeature.orientation.toString())
+            featureObject.putBoolean("isSeparating", foldingFeature.isSeparating)
+            featureObject.putString("occlusionType", foldingFeature.occlusionType.toString())
 
             // Parse and include detailed bounds information
             val bounds = parseBoundsString(foldingFeature.bounds.toString())
-            featureObject.putMap("Bounds", bounds)
+            featureObject.putMap("bounds", bounds)
           }
 
           event.putMap("displayFeatures", featureObject)

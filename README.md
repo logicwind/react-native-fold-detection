@@ -11,11 +11,26 @@ npm install react-native-fold-detection
 ## Usage
 
 ```js
-import { multiply } from 'react-native-fold-detection';
+import * as React from 'react';
 
-// ...
+import { FoldingFeatureProvider } from 'react-native-fold-detection';
+import SampleScreen from './SampleScreen';
 
-const result = await multiply(3, 7);
+export default function App() {
+  return (
+    <FoldingFeatureProvider>
+      <SampleScreen />
+    </FoldingFeatureProvider>
+  );
+}
+
+
+
+
+import { useFoldingFeature } from 'react-native-fold-detection';
+
+const { layoutInfo, isTableTop, isBook, isFlat } = useFoldingFeature();
+
 ```
 
 ## Contributing

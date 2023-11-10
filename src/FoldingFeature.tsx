@@ -21,4 +21,12 @@ interface FoldingFeatureInterface {
   startListening: () => void;
 }
 
+export function startFoldEventListener() {
+  FoldingFeature.startListening();
+}
+
+export function stopFoldEventListener() {
+  FoldingFeature.stopListening();
+}
+
 export default FoldingFeature as FoldingFeatureInterface;

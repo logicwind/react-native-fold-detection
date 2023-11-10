@@ -8,10 +8,10 @@ The purpose of the package is to provide details regarding the Android folding c
 npm install react-native-fold-detection
 ```
 
-## Usage
+## In App.js Wrap your app with FoldingFeatureProvider
 
 ```js
-//In App.js
+
 import * as React from 'react';
 
 import { FoldingFeatureProvider } from 'react-native-fold-detection';
@@ -24,13 +24,23 @@ export default function App() {
     </FoldingFeatureProvider>
   );
 }
+```
 
-//In other screens
+## In other screens
+```js
 import { useFoldingFeature } from 'react-native-fold-detection';
 
 const { layoutInfo, isTableTop, isBook, isFlat } = useFoldingFeature();
 
 ```
+
+### useFoldingFeature Props
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+|layoutInfo | LayoutInfo | |Folding Feature from [android doc](https://developer.android.com/reference/kotlin/androidx/window/layout/FoldingFeature) |
+| isTableTop | boolean | false | HALF_OPENED & HORIZONTAL |
+| isBook | boolean | false| HALF_OPENED & VERTICAL  |
+| isFlat | boolean | true | |
 
 ## Contributing
 

@@ -8,6 +8,23 @@ The purpose of the package is to provide details regarding the Android folding c
 npm install react-native-fold-detection
 ```
 
+
+## iOS
+
+You'll need to disable auto-linking for this package.
+To do so, create react-native.config.js in the root of your project with this content:
+```js
+module.exports = {
+  dependencies: {
+    "react-native-fold-detection": {
+      platforms: {
+        ios: null, // this will disable autolinking for this package on iOS
+      },
+    },
+  },
+};
+```
+
 ## In App.js Wrap your app with FoldingFeatureProvider
 
 ```js
@@ -33,21 +50,6 @@ import { useFoldingFeature } from "react-native-fold-detection";
 const { layoutInfo, isTableTop, isBook, isFlat } = useFoldingFeature();
 ```
 
-## In other screens
-
-You'll need to disable autolinking for this package
-
-```js
-module.exports = {
-  dependencies: {
-    "react-native-fold-detection": {
-      platforms: {
-        ios: null, // this will disable autolinking for this package on iOS
-      },
-    },
-  },
-};
-```
 
 ### useFoldingFeature Props
 

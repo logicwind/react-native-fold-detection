@@ -6,15 +6,15 @@ import React, {
   useState,
   type PropsWithChildren,
 } from 'react';
-import { NativeEventEmitter } from 'react-native';
+import { NativeEventEmitter, Platform } from 'react-native';
 
-import FoldingFeature from '../FoldingFeature.android';
+import FoldingFeature from '../FoldingFeature';
 import {
   FoldingFeatureOcclusionType,
   FoldingFeatureOrientation,
   FoldingFeatureState,
   type LayoutInfo,
-} from '../types/index.android';
+} from '../types';
 
 type FoldingFeatureContextProps = {
   layoutInfo: LayoutInfo;
@@ -38,6 +38,14 @@ export const FoldingFeatureContext = createContext<FoldingFeatureContextProps>({
 });
 
 export const useFoldingFeature = () => {
+  if (Platform.OS === 'ios') {
+    return {
+      layoutInfo: undefined,
+      isTableTop: undefined,
+      isBook: undefined,
+      isFlat: undefined,
+    };
+  }
   const context = useContext(FoldingFeatureContext);
 
   if (context === undefined) {
@@ -48,6 +56,9 @@ export const useFoldingFeature = () => {
 };
 
 export const FoldingFeatureProvider = ({ children }: PropsWithChildren<{}>) => {
+  if (Platform.OS === 'ios') {
+    return children;
+  }
   const value = useProvideFunc();
 
   return (

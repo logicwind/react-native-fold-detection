@@ -1,6 +1,11 @@
 {
   "compilerOptions": {
     "rootDir": ".",
+    "paths": {
+      "react-native-fold-detection": [
+        "./src/index"
+      ]
+    },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "esModuleInterop": true,

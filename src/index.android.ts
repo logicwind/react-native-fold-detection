@@ -1,2 +1,2 @@
 export * from './context/FoldingFeatureContext.ios';
-export * from './types';
+export * from './types/index.android';

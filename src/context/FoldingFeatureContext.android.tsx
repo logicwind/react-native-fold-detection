@@ -8,13 +8,13 @@ import React, {
 } from 'react';
 import { NativeEventEmitter } from 'react-native';
 
-import FoldingFeature from '../FoldingFeature';
+import FoldingFeature from '../FoldingFeature.android';
 import {
   FoldingFeatureOcclusionType,
   FoldingFeatureOrientation,
   FoldingFeatureState,
   type LayoutInfo,
-} from '../types';
+} from '../types/index.android';
 
 type FoldingFeatureContextProps = {
   layoutInfo: LayoutInfo;

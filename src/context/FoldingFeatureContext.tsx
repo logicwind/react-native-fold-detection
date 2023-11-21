@@ -40,10 +40,10 @@ export const FoldingFeatureContext = createContext<FoldingFeatureContextProps>({
 export const useFoldingFeature = () => {
   if (Platform.OS === 'ios') {
     return {
-      layoutInfo: undefined,
-      isTableTop: undefined,
-      isBook: undefined,
-      isFlat: undefined,
+      layoutInfo: {},
+      isTableTop: false,
+      isBook: false,
+      isFlat: true,
     };
   }
   const context = useContext(FoldingFeatureContext);

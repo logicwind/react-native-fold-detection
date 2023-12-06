@@ -1,0 +1,22 @@
+name: '🚀 release'
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    name: 🚀 release
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📚 checkout
+        uses: actions/checkout@v3
+      - name: 🟢 node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.18.1
+      - name: Install Dependencies
+        run: npm install
+      - name: 🚀 publish
+        uses: JS-DevTools/npm-publish@v1
+        with:
+          token: ${{secrets.NPM_AUTH_TOKEN}}

@@ -1,5 +1,5 @@
 {
-  "name": "react-native-fold-detection",
+  "name": "@logicwind/react-native-fold-detection",
   "version": "0.1.0",
   "description": "The purpose of the package is to provide details regarding the Android folding capability.",
   "main": "lib/commonjs/index",
@@ -47,7 +47,8 @@
   },
   "homepage": "https://github.com/logicwind/react-native-fold-detection#readme",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/"
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "17.0.2",

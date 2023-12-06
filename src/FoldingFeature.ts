@@ -6,27 +6,34 @@ const LINKING_ERROR =
   '- You rebuilt the app after installing the package\n' +
   '- You are not using Expo Go\n';
 
-const FoldingFeature = NativeModules.FoldingFeature
-  ? NativeModules.FoldingFeature
-  : new Proxy(
-      {},
-      {
-        get() {
-          throw new Error(LINKING_ERROR);
-        },
-      }
-    );
+const FoldingFeature =
+  Platform.OS === 'ios'
+    ? null
+    : NativeModules.FoldingFeature
+    ? NativeModules.FoldingFeature
+    : new Proxy(
+        {},
+        {
+          get() {
+            throw new Error(LINKING_ERROR);
+          },
+        }
+      );
 
 interface FoldingFeatureInterface {
   startListening: () => void;
 }
 
 export function startFoldEventListener() {
-  FoldingFeature.startListening();
+  if (Platform.OS === 'android') {
+    FoldingFeature.startListening();
+  }
 }
 
 export function stopFoldEventListener() {
-  FoldingFeature.stopListening();
+  if (Platform.OS === 'android') {
+    FoldingFeature.stopListening();
+  }
 }
 
 export default FoldingFeature as FoldingFeatureInterface;

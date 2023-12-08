@@ -1,6 +1,6 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet, Text } from 'react-native';
-import { useFoldingFeature } from 'react-native-fold-detection';
+import { useFoldingFeature } from '@logicwind/react-native-fold-detection';
 
 export default () => {
   const { layoutInfo, isTableTop, isBook, isFlat } = useFoldingFeature();

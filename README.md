@@ -5,7 +5,7 @@ The purpose of the package is to provide details regarding the Android folding c
 ## Installation
 
 ```sh
-npm install react-native-fold-detection
+npm install @logicwind/react-native-fold-detection
 ```
 
 
@@ -30,7 +30,7 @@ module.exports = {
 ```js
 import * as React from "react";
 
-import { FoldingFeatureProvider } from "react-native-fold-detection";
+import { FoldingFeatureProvider } from "@logicwind/react-native-fold-detection";
 import SampleScreen from "./SampleScreen";
 
 export default function App() {
@@ -45,7 +45,7 @@ export default function App() {
 ## In other screens
 
 ```js
-import { useFoldingFeature } from "react-native-fold-detection";
+import { useFoldingFeature } from "@logicwind/react-native-fold-detection";
 
 const { layoutInfo, isTableTop, isBook, isFlat } = useFoldingFeature();
 ```

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import { FoldingFeatureProvider } from 'react-native-fold-detection';
+import { FoldingFeatureProvider } from '@logicwind/react-native-fold-detection';
 import SampleScreen from './SampleScreen';
 
 export default function App() {

@@ -25,12 +25,20 @@ class FoldDetectionModule(reactContext: ReactApplicationContext) : ReactContextB
 
   @ReactMethod
   fun startListening() {
-    windowInfoTracker.addWindowLayoutInfoListener(currentActivity!!, Executors.newSingleThreadExecutor(), layoutStateChangeCallback)
+    try {
+      windowInfoTracker.addWindowLayoutInfoListener(currentActivity!!, Executors.newSingleThreadExecutor(), layoutStateChangeCallback)
+    } catch (e: Exception) {
+      event.putString("addWindowLayoutInfoListener", "Error on startListening")
+    }
   }
 
   @ReactMethod
   fun stopListening() {
-    windowInfoTracker.removeWindowLayoutInfoListener(layoutStateChangeCallback)
+    try {
+      windowInfoTracker.removeWindowLayoutInfoListener(layoutStateChangeCallback)
+    } catch (e: Exception) {
+      event.putString("removeWindowLayoutInfoListener", "Error on stopListening")
+    }
   }
 
   inner class LayoutStateChangeCallback : Consumer<WindowLayoutInfo> {

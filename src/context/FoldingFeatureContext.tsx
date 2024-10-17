@@ -117,8 +117,15 @@ const useProvideFunc = (): FoldingFeatureContextProps => {
       }
     );
 
+    const errorSubscription = eventEmitter.addListener('onError', (event) => {
+      if (event?.error) {
+        console.log('FoldingFeature', event.error);
+      }
+    });
+
     return () => {
       layoutSubscription.remove();
+      errorSubscription.remove();
     };
   }, []);
 

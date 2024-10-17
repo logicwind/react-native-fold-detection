@@ -25,6 +25,7 @@ class FoldDetectionModule(reactContext: ReactApplicationContext) : ReactContextB
 
   @ReactMethod
   fun startListening() {
+    val event: WritableMap = Arguments.createMap()
     try {
       windowInfoTracker.addWindowLayoutInfoListener(currentActivity!!, Executors.newSingleThreadExecutor(), layoutStateChangeCallback)
     } catch (e: Exception) {
@@ -34,6 +35,7 @@ class FoldDetectionModule(reactContext: ReactApplicationContext) : ReactContextB
 
   @ReactMethod
   fun stopListening() {
+    val event: WritableMap = Arguments.createMap()
     try {
       windowInfoTracker.removeWindowLayoutInfoListener(layoutStateChangeCallback)
     } catch (e: Exception) {

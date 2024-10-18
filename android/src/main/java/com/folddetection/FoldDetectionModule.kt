@@ -14,14 +14,16 @@ import androidx.window.layout.WindowInfoTracker
 import androidx.window.layout.WindowLayoutInfo
 import java.util.concurrent.Executors
 
-class FoldDetectionModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
+class FoldDetectionModule(reactContext: ReactApplicationContext) :
+  ReactContextBaseJavaModule(reactContext) {
   private var windowInfoTracker: WindowInfoTrackerCallbackAdapter? = null
   private val layoutStateChangeCallback = LayoutStateChangeCallback()
 
   init {
     val packageManager = reactContext.packageManager
     if (packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE)) {
-      windowInfoTracker = WindowInfoTrackerCallbackAdapter(WindowInfoTracker.getOrCreate(reactContext))
+      windowInfoTracker =
+        WindowInfoTrackerCallbackAdapter(WindowInfoTracker.getOrCreate(reactContext))
     }
   }
 
@@ -32,17 +34,29 @@ class FoldDetectionModule(reactContext: ReactApplicationContext) : ReactContextB
   @ReactMethod
   fun startListening() {
     val activity = currentActivity
-    if (activity != null && windowInfoTracker != null) {
-      windowInfoTracker!!.addWindowLayoutInfoListener(activity, Executors.newSingleThreadExecutor(), layoutStateChangeCallback)
-    } else {
-      sendErrorEvent("Activity is null or device does not support fold feature in startListening")
+    try {
+      if (activity != null && windowInfoTracker != null) {
+        windowInfoTracker!!.addWindowLayoutInfoListener(
+          activity,
+          Executors.newSingleThreadExecutor(),
+          layoutStateChangeCallback
+        )
+      } else {
+        sendErrorEvent("Activity is null or device does not support fold feature in startListening")
+      }
+    } catch (e: Exception) {
+      sendErrorEvent("Error On startListening")
     }
   }
 
   @ReactMethod
   fun stopListening() {
-    if (windowInfoTracker != null) {
-      windowInfoTracker!!.removeWindowLayoutInfoListener(layoutStateChangeCallback)
+    try {
+      if (windowInfoTracker != null) {
+        windowInfoTracker!!.removeWindowLayoutInfoListener(layoutStateChangeCallback)
+      }
+    } catch (e: Exception) {
+      sendErrorEvent("Error On stopListening")
     }
   }
 
@@ -53,7 +67,8 @@ class FoldDetectionModule(reactContext: ReactApplicationContext) : ReactContextB
       try {
         val displayFeaturesList = newLayoutInfo.displayFeatures
         val packageManager = reactApplicationContext.packageManager
-        val featureSupported = packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE)
+        val featureSupported =
+          packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE)
 
         if (displayFeaturesList.isNotEmpty()) {
           val feature = displayFeaturesList[0] // Assuming there's only one feature
@@ -102,7 +117,12 @@ class FoldDetectionModule(reactContext: ReactApplicationContext) : ReactContextB
       return bounds
     }
   }
-  private fun sendEvent(reactContext: ReactApplicationContext, eventName: String, params: WritableMap) {
+
+  private fun sendEvent(
+    reactContext: ReactApplicationContext,
+    eventName: String,
+    params: WritableMap
+  ) {
     reactContext
       .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
       .emit(eventName, params)

@@ -1,6 +1,6 @@
 {
   "name": "@logicwind/react-native-fold-detection",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "The purpose of the package is to provide details regarding the Android folding capability.",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -40,7 +40,7 @@
     "android"
   ],
   "repository": "https://github.com/logicwind/react-native-fold-detection",
-  "author": "logicwind <farhan.pathan@logicwind.com> (https://github.com)",
+  "author": "logicwind <devtools@logicwind.com> (https://github.com)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/logicwind/react-native-fold-detection/issues"

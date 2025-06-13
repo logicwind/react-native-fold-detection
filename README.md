@@ -60,10 +60,12 @@ const { layoutInfo, isTableTop, isBook, isFlat } = useFoldingFeature();
 | isBook     | boolean    | false   | HALF_OPENED & VERTICAL                                                                                                   |
 | isFlat     | boolean    | true    |                                                                                                                          |
 
+## react-native-fold-detection is crafted mindfully at [Logicwind](https://www.logicwind.com?utm_source=github&utm_medium=github.com-logicwind&utm_campaign=react-native-fold-detection)
+
+We are a 130+ people company developing and designing multiplatform applications using the Lean & Agile methodology. To get more information on the solutions that would suit your needs, feel free to get in touch by [email](mailto:sales@logicwind.com) or through or [contact form](https://www.logicwind.com/contact-us?utm_source=github&utm_medium=github.com-logicwind&utm_campaign=react-native-fold-detection)!
+
+We will always answer you with pleasure 😁
+
 ## License
 
-MIT
-
----
-
-Made with [create-react-native-library](https://github.com/callstack/react-native-builder-bob)
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details

@@ -37,7 +37,17 @@
   "keywords": [
     "react-native",
     "ios",
-    "android"
+    "android",
+    "foldable",
+    "fold detection",
+    "dual screen",
+    "foldable phone",
+    "react-native-fold",
+    "foldable-device",
+    "device posture",
+    "screen posture",
+    "multi-window",
+    "foldable support"
   ],
   "repository": "https://github.com/logicwind/react-native-fold-detection",
   "author": "logicwind <devtools@logicwind.com> (https://github.com)",

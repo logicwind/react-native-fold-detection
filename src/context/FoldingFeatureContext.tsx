@@ -38,6 +38,12 @@ export const FoldingFeatureContext = createContext<FoldingFeatureContextProps>({
 });
 
 export const useFoldingFeature = () => {
+  const context = useContext(FoldingFeatureContext);
+
+  if (context === undefined) {
+    throw new Error('useFoldingFeature was used outside of its provider');
+  }
+
   if (Platform.OS === 'ios') {
     return {
       layoutInfo: {},
@@ -46,20 +52,16 @@ export const useFoldingFeature = () => {
       isFlat: true,
     };
   }
-  const context = useContext(FoldingFeatureContext);
-
-  if (context === undefined) {
-    throw new Error('useFoldingFeature was used outside of its provider');
-  }
-
+  
   return context;
 };
 
 export const FoldingFeatureProvider = ({ children }: PropsWithChildren<{}>) => {
+  const value = useProvideFunc();
+
   if (Platform.OS === 'ios') {
     return children;
   }
-  const value = useProvideFunc();
 
   return (
     <FoldingFeatureContext.Provider value={value}>
@@ -100,6 +102,10 @@ const useProvideFunc = (): FoldingFeatureContextProps => {
   }, [isTableTop, isBook]);
 
   useEffect(() => {
+    if (Platform.OS === 'ios') {
+      return; // Just return early from the effect
+    }
+
     FoldingFeature.startListening();
 
     const eventEmitter = new NativeEventEmitter();

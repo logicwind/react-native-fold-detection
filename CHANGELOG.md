@@ -1,3 +1,12 @@
+## 1.0.0
+
+- Package Upgrade
+- Fix: Initial Fold Detection ([#18] (https://github.com/logicwind/react-native-fold-detection/issues/18))
+
+**Breaking Changes**
+
+- `FoldingFeatureProvider` is no more required.
+
 ## 0.3.2
 
 - Fix: Invalid hook call ([#14](https://github.com/logicwind/react-native-fold-detection/issues/14))

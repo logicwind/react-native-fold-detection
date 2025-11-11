@@ -1,6 +1,6 @@
 {
   "name": "@logicwind/react-native-fold-detection",
-  "version": "0.3.2",
+  "version": "1.0.0",
   "description": "A lightweight React Native library that helps developers easily detect the fold state of foldable devices.",
   "source": "./src/index.tsx",
   "main": "./lib/commonjs/index.js",

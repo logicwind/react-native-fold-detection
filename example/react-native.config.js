@@ -1,15 +1,21 @@
 const path = require('path');
-const pak = require('../package.json');
+const pkg = require('../package.json');
 
 module.exports = {
-  dependencies: {
-    'react-native-fold-detection': {
-      platforms: {
-        ios: null, // this will disable autolinking for this package on iOS
-      },
+  project: {
+    ios: {
+      automaticPodsInstallation: true,
     },
-    [pak.name]: {
+  },
+  dependencies: {
+    [pkg.name]: {
       root: path.join(__dirname, '..'),
+      platforms: {
+        // Codegen script incorrectly fails without this
+        // So we explicitly specify the platforms with empty object
+        ios: {},
+        android: {},
+      },
     },
   },
 };

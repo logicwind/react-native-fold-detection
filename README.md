@@ -30,7 +30,7 @@ The `useFoldingFeature()` hook provides information about the device’s folding
 It helps you adapt your UI layout based on how the device is folded.
 
 ```tsx
-import { useFoldingFeature } from 'react-native-folding-feature';
+import { useFoldingFeature } from '@logicwind/react-native-fold-detection';
 
 const MyComponent = () => {
   const { layoutInfo, isTableTop, isBook, isFlat } = useFoldingFeature();

@@ -1,64 +1,78 @@
-# react-native-fold-detection
+# @logicwind/react-native-fold-detection
 
-The purpose of the package is to provide details regarding the Android folding capability.
+`@logicwind/react-native-fold-detection` is a lightweight React Native library that helps developers easily detect the fold state of foldable devices.
 
 ## Installation
 
-```sh
+Using npm:
+
+```sh md title="Terminal"
 npm install @logicwind/react-native-fold-detection
 ```
 
+or using yarn:
 
-## iOS
+```sh md title="Terminal"
+yarn add @logicwind/react-native-fold-detection
+```
 
-You'll need to disable auto-linking for this package.
-To do so, create react-native.config.js in the root of your project with this content:
-```js
-module.exports = {
-  dependencies: {
-    "react-native-fold-detection": {
-      platforms: {
-        ios: null, // this will disable autolinking for this package on iOS
-      },
-    },
-  },
+### Expo Setup
+
+If you're working with this Expo project, make sure to run:
+
+```sh md title="Terminal"
+npx expo prebuild
+```
+
+## Usage
+
+The `useFoldingFeature()` hook provides information about the device’s folding state — useful when developing apps for foldable devices (like the Samsung Galaxy Fold or Surface Duo).
+It helps you adapt your UI layout based on how the device is folded.
+
+```tsx
+import { useFoldingFeature } from '@logicwind/react-native-fold-detection';
+
+const MyComponent = () => {
+  const { layoutInfo, isTableTop, isBook, isFlat } = useFoldingFeature();
+
+  return (
+    <View>
+      {isTableTop && <Text>Device is in tabletop mode</Text>}
+      {isBook && <Text>Device is in book mode</Text>}
+      {isFlat && <Text>Device is fully flat</Text>}
+    </View>
+  );
 };
 ```
 
-## In App.js Wrap your app with FoldingFeatureProvider
+## Returned Values
 
-```js
-import * as React from "react";
+| Property     | Type         | Description                                                                                                                                              |
+| ------------ | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `layoutInfo` | `LayoutInfo` | Provides detailed layout data about the folding feature — such as hinge bounds, orientation, and separation state. Useful for custom layout adjustments. |
+| `isTableTop` | `boolean`    | Returns `true` when the device is partially folded in **tabletop mode** (like a laptop).                                                                 |
+| `isBook`     | `boolean`    | Returns `true` when the device is folded.                                                                                                                |
+| `isFlat`     | `boolean`    | Returns `true` when the device is **completely unfolded (flat)**. Ideal for fullscreen layouts.                                                          |
 
-import { FoldingFeatureProvider } from "@logicwind/react-native-fold-detection";
-import SampleScreen from "./SampleScreen";
+### `LayoutInfo` Type
 
-export default function App() {
-  return (
-    <FoldingFeatureProvider>
-      <SampleScreen />
-    </FoldingFeatureProvider>
-  );
-}
-```
+| Property          | Type                         | Description                                                                   |
+| ----------------- | ---------------------------- | ----------------------------------------------------------------------------- |
+| `state`           | `'FLAT' \| 'HALF_OPENED'`    | Current folding state of the device.                                          |
+| `orientation`     | `'VERTICAL' \| 'HORIZONTAL'` | Orientation of the folding hinge.                                             |
+| `occlusionType`   | `'NONE' \| 'FULL'`           | Indicates whether the hinge area occludes (covers) part of the display.       |
+| `isSeparating`    | `boolean`                    | `true` if the hinge divides the display area into two separate regions.       |
+| `isFoldSupported` | `boolean`                    | `true` if the device supports folding features.                               |
+| `bounds`          | `Bounds`                     | The screen coordinates that describe the position and size of the hinge area. |
 
-## In other screens
+### `Bounds` Type
 
-```js
-import { useFoldingFeature } from "@logicwind/react-native-fold-detection";
-
-const { layoutInfo, isTableTop, isBook, isFlat } = useFoldingFeature();
-```
-
-
-### useFoldingFeature Props
-
-| Prop       | Type       | Default | Description                                                                                                              |
-| ---------- | ---------- | ------- | ------------------------------------------------------------------------------------------------------------------------ |
-| layoutInfo | LayoutInfo |         | Folding Feature from [android doc](https://developer.android.com/reference/kotlin/androidx/window/layout/FoldingFeature) |
-| isTableTop | boolean    | false   | HALF_OPENED & HORIZONTAL                                                                                                 |
-| isBook     | boolean    | false   | HALF_OPENED & VERTICAL                                                                                                   |
-| isFlat     | boolean    | true    |                                                                                                                          |
+| Property | Type     | Description                                                           |
+| -------- | -------- | --------------------------------------------------------------------- |
+| `top`    | `number` | Distance (in pixels) from the top edge of the screen to the hinge.    |
+| `bottom` | `number` | Distance (in pixels) from the bottom edge of the screen to the hinge. |
+| `left`   | `number` | Distance (in pixels) from the left edge of the screen to the hinge.   |
+| `right`  | `number` | Distance (in pixels) from the right edge of the screen to the hinge.  |
 
 ## react-native-fold-detection is crafted mindfully at [Logicwind](https://www.logicwind.com?utm_source=github&utm_medium=github.com-logicwind&utm_campaign=react-native-fold-detection)
 

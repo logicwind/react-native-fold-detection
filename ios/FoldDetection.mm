@@ -1,19 +1,14 @@
-#import "FoldDetection.h"
+#import <React/RCTBridgeModule.h>
 
-@implementation FoldDetection
-RCT_EXPORT_MODULE()
+@interface RCT_EXTERN_MODULE(FoldDetection, NSObject)
 
-// Example method
-// See // https://reactnative.dev/docs/native-modules-ios
-RCT_EXPORT_METHOD(multiply:(double)a
-                  b:(double)b
-                  resolve:(RCTPromiseResolveBlock)resolve
-                  reject:(RCTPromiseRejectBlock)reject)
+RCT_EXTERN_METHOD(multiply:(float)a withB:(float)b
+                 withResolver:(RCTPromiseResolveBlock)resolve
+                 withRejecter:(RCTPromiseRejectBlock)reject)
+
++ (BOOL)requiresMainQueueSetup
 {
-    NSNumber *result = @(a * b);
-
-    resolve(result);
+  return NO;
 }
-
 
 @end

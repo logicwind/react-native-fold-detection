@@ -1,136 +1,210 @@
 package com.folddetection
 
-import android.content.pm.PackageManager
-import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
-import com.facebook.react.bridge.WritableMap
-import com.facebook.react.modules.core.DeviceEventManagerModule
+import android.app.Activity
+import android.content.Context
+import android.graphics.Rect
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import androidx.core.util.Consumer
 import androidx.window.java.layout.WindowInfoTrackerCallbackAdapter
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
 import androidx.window.layout.WindowLayoutInfo
+import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.Promise
+import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReactContextBaseJavaModule
+import com.facebook.react.bridge.ReactMethod
+import com.facebook.react.bridge.WritableMap
+import com.facebook.react.modules.core.DeviceEventManagerModule
+import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-class FoldDetectionModule(reactContext: ReactApplicationContext) :
+class FoldDetectionModule(private val reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
-  private var windowInfoTracker: WindowInfoTrackerCallbackAdapter? = null
-  private val layoutStateChangeCallback = LayoutStateChangeCallback()
 
-  init {
-    val packageManager = reactContext.packageManager
-    if (packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE)) {
-      windowInfoTracker =
-        WindowInfoTrackerCallbackAdapter(WindowInfoTracker.getOrCreate(reactContext))
-    }
-  }
+  private val executor: Executor = Executors.newSingleThreadExecutor()
+  private var listenerRegistered = false
+  private var lastKnownOrientation: String? = null
+  private var lastKnownState: String? = null
+  private var hingeAngle: Float? = null
 
-  override fun getName(): String {
-    return "FoldingFeature"
-  }
+  override fun getName(): String = NAME
 
+  // Start listening for folding feature changes
   @ReactMethod
   fun startListening() {
-    val activity = currentActivity
-    try {
-      if (activity != null && windowInfoTracker != null) {
-        windowInfoTracker!!.addWindowLayoutInfoListener(
-          activity,
-          Executors.newSingleThreadExecutor(),
-          layoutStateChangeCallback
-        )
-      } else {
-        sendErrorEvent("Activity is null or device does not support fold feature in startListening")
-      }
-    } catch (e: Exception) {
-      sendErrorEvent("Error On startListening")
+    val activity: Activity = reactContext.currentActivity ?: return
+    if (listenerRegistered) return
+
+    val tracker = WindowInfoTracker.getOrCreate(activity)
+    val adapter = WindowInfoTrackerCallbackAdapter(tracker)
+
+    val listener = Consumer<WindowLayoutInfo> { layoutInfo ->
+      val map = processLayoutInfo(layoutInfo)
+      sendEvent("onFoldChange", map)
     }
+
+    adapter.addWindowLayoutInfoListener(activity, executor, listener)
+    listenerRegistered = true
   }
 
+  // Stop listening for folding feature changes
   @ReactMethod
   fun stopListening() {
-    try {
-      if (windowInfoTracker != null) {
-        windowInfoTracker!!.removeWindowLayoutInfoListener(layoutStateChangeCallback)
-      }
-    } catch (e: Exception) {
-      sendErrorEvent("Error On stopListening")
-    }
+    listenerRegistered = false
   }
 
-  inner class LayoutStateChangeCallback : Consumer<WindowLayoutInfo> {
-    override fun accept(newLayoutInfo: WindowLayoutInfo) {
-      val event: WritableMap = Arguments.createMap()
+  // Get current layout info once
+  @ReactMethod
+  fun getLayoutInfo(promise: Promise) {
+    val activity: Activity = reactContext.currentActivity ?: run {
+      promise.reject("NO_ACTIVITY", "No current activity found")
+      return
+    }
 
-      try {
-        val displayFeaturesList = newLayoutInfo.displayFeatures
-        val packageManager = reactApplicationContext.packageManager
-        val featureSupported =
-          packageManager.hasSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE)
+    val tracker = WindowInfoTracker.getOrCreate(activity)
+    val adapter = WindowInfoTrackerCallbackAdapter(tracker)
 
-        if (displayFeaturesList.isNotEmpty()) {
-          val feature = displayFeaturesList[0] // Assuming there's only one feature
+    lateinit var listener: Consumer<WindowLayoutInfo>
 
-          val featureObject = Arguments.createMap()
+    listener = Consumer { layoutInfo ->
+      val map = processLayoutInfo(layoutInfo)
+      adapter.removeWindowLayoutInfoListener(listener)
+      promise.resolve(map)
+    }
 
-          if (feature is FoldingFeature) {
-            val foldingFeature = feature as FoldingFeature
-            featureObject.putString("state", foldingFeature.state.toString())
-            featureObject.putString("orientation", foldingFeature.orientation.toString())
-            featureObject.putBoolean("isSeparating", foldingFeature.isSeparating)
-            featureObject.putString("occlusionType", foldingFeature.occlusionType.toString())
-            featureObject.putBoolean("isFoldSupported", featureSupported)
+    adapter.addWindowLayoutInfoListener(activity, executor, listener)
+  }
 
-            // Parse and include detailed bounds information
-            val bounds = parseBoundsString(foldingFeature.bounds.toString())
-            featureObject.putMap("bounds", bounds)
-          }
+  private fun processLayoutInfo(layoutInfo: WindowLayoutInfo): WritableMap {
+    val fold = layoutInfo.displayFeatures.filterIsInstance<FoldingFeature>().firstOrNull()
+    val map = Arguments.createMap()
 
-          event.putMap("displayFeatures", featureObject)
+    val isHardwareFoldable = isFoldableDevice(reactContext)
+    val hasFoldingFeature = fold != null
+    val isFoldSupported = isHardwareFoldable || hasFoldingFeature
+
+    val boundsMap = Arguments.createMap()
+    var state = "FLAT"
+    var orientation = "VERTICAL"
+    var occlusionType = "NONE"
+    var isSeparating = false
+
+    if (fold != null) {
+      state = when (fold.state) {
+        FoldingFeature.State.FLAT -> "FLAT"
+        FoldingFeature.State.HALF_OPENED -> "HALF_OPENED"
+        else -> "HALF_OPENED"
+      }
+
+      orientation = when (fold.orientation) {
+        FoldingFeature.Orientation.HORIZONTAL -> "HORIZONTAL"
+        FoldingFeature.Orientation.VERTICAL -> "VERTICAL"
+        else -> "VERTICAL"
+      }
+
+      occlusionType = when (fold.occlusionType) {
+        FoldingFeature.OcclusionType.NONE -> "NONE"
+        FoldingFeature.OcclusionType.FULL -> "FULL"
+        else -> "NONE"
+      }
+
+      isSeparating = fold.isSeparating
+
+      boundsMap.putInt("top", fold.bounds.top)
+      boundsMap.putInt("bottom", fold.bounds.bottom)
+      boundsMap.putInt("left", fold.bounds.left)
+      boundsMap.putInt("right", fold.bounds.right)
+
+      lastKnownOrientation = orientation
+      lastKnownState = state
+
+    } else {
+      val fallbackOrientation = lastKnownOrientation ?: "VERTICAL"
+      val fallbackState =
+        if (isFoldSupported) {
+          if (hingeAngle != null && hingeAngle!! < 30) "HALF_OPENED"
+          else "HALF_OPENED"
+        } else {
+          "FLAT"
         }
-      } catch (e: Exception) {
-        event.putString("displayFeatures", "Error parsing displayFeatures")
-      }
 
-      sendEvent(reactApplicationContext, "onLayoutInfoChange", event)
+      state = fallbackState
+      orientation = fallbackOrientation
+
+      boundsMap.putInt("top", 0)
+      boundsMap.putInt("bottom", 0)
+      boundsMap.putInt("left", 0)
+      boundsMap.putInt("right", 0)
     }
 
-    private fun parseBoundsString(boundsString: String): WritableMap {
-      val bounds = Arguments.createMap()
-      val regex = Regex(".*\\((\\d+), (\\d+) - (\\d+), (\\d+)\\)")
-      val matchResult = regex.find(boundsString)
+    val isTableTop = (state == "HALF_OPENED" && orientation == "HORIZONTAL")
+    val isBook = (state == "HALF_OPENED" && orientation == "VERTICAL")
+    val isFlat = state == "FLAT"
 
-      if (matchResult != null && matchResult.groupValues.size == 5) {
-        val left = matchResult.groupValues[1].toInt()
-        val top = matchResult.groupValues[2].toInt()
-        val right = matchResult.groupValues[3].toInt()
-        val bottom = matchResult.groupValues[4].toInt()
+    val layoutInfoMap = Arguments.createMap()
+    layoutInfoMap.putString("state", state)
+    layoutInfoMap.putString("orientation", orientation)
+    layoutInfoMap.putString("occlusionType", occlusionType)
+    layoutInfoMap.putBoolean("isSeparating", isSeparating)
+    layoutInfoMap.putBoolean("isFoldSupported", isFoldSupported)
+    layoutInfoMap.putMap("bounds", boundsMap)
 
-        bounds.putInt("left", left)
-        bounds.putInt("top", top)
-        bounds.putInt("right", right)
-        bounds.putInt("bottom", bottom)
-      }
+    map.putMap("layoutInfo", layoutInfoMap)
+    map.putBoolean("isTableTop", isTableTop)
+    map.putBoolean("isBook", isBook)
+    map.putBoolean("isFlat", isFlat)
 
-      return bounds
-    }
+    return map
   }
 
-  private fun sendEvent(
-    reactContext: ReactApplicationContext,
-    eventName: String,
-    params: WritableMap
-  ) {
+  private fun sendEvent(eventName: String, params: WritableMap) {
     reactContext
       .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
       .emit(eventName, params)
   }
 
-  private fun sendErrorEvent(errorMessage: String) {
-    val event: WritableMap = Arguments.createMap()
-    event.putString("error", errorMessage)
-    sendEvent(reactApplicationContext, "onError", event)
+  private fun isFoldableDevice(context: ReactApplicationContext): Boolean {
+    return try {
+      val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+      val hingeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_HINGE_ANGLE)
+
+      if (hingeSensor != null) {
+        val listener = object : SensorEventListener {
+          override fun onSensorChanged(event: SensorEvent) {
+            hingeAngle = event.values[0]
+          }
+
+          override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
+        }
+        sensorManager.registerListener(listener, hingeSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        return true
+      }
+
+      val pm = context.packageManager
+      val hasSamsungFold = pm.hasSystemFeature("com.samsung.feature.FOLDABLE_DEVICE")
+      val hasHuaweiFold = pm.hasSystemFeature("com.huawei.hardware.sensor.posture")
+
+      hasSamsungFold || hasHuaweiFold
+    } catch (e: Exception) {
+      false
+    }
+  }
+
+  @ReactMethod
+  fun addListener(eventName: String?) {
+    // Empty
+  }
+
+  @ReactMethod
+  fun removeListeners(count: Int) {
+    // Empty
+  }
+
+  companion object {
+    const val NAME = "FoldDetection"
   }
 }
